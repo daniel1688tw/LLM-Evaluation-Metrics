@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-07-10T14:49:52.886768",
+  "task": "summarization_evaluation",
+  "dataset": "cnn_dailymail",
+  "results": [
+    {
+      "model": "facebook/bart-large-cnn",
+      "rouge1": 40.3,
+      "rouge2": 19.68,
+      "rougeL": 29.95,
+      "bertscore": 88.45,
+      "num_samples": 50,
+      "timestamp": "2026-07-10T14:48:12.595542"
+    },
+    {
+      "model": "google/pegasus-cnn_dailymail",
+      "rouge1": 38.17,
+      "rouge2": 16.71,
+      "rougeL": 27.78,
+      "bertscore": 87.59,
+      "num_samples": 50,
+      "timestamp": "2026-07-10T14:49:52.827883"
+    }
+  ]
+}

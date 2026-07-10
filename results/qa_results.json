@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-07-10T14:47:00.957269",
+  "task": "qa_evaluation",
+  "dataset": "squad",
+  "results": [
+    {
+      "model": "deepset/roberta-base-squad2",
+      "exact_match": 94.0,
+      "f1_score": 95.23,
+      "num_samples": 100,
+      "timestamp": "2026-07-10T14:46:50.897446"
+    },
+    {
+      "model": "bert-large-uncased-whole-word-masking-finetuned-squad",
+      "exact_match": 86.0,
+      "f1_score": 91.67,
+      "num_samples": 100,
+      "timestamp": "2026-07-10T14:47:00.941951"
+    }
+  ]
+}

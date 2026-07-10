@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-07-10T14:57:35.995369",
+  "task": "rag_evaluation",
+  "dataset": "MMMem-org/HippoCamp (factual_retention)",
+  "results": [
+    {
+      "model": "sentence-transformers/all-MiniLM-L6-v2",
+      "hit@1": 39.42307692307692,
+      "hit@5": 62.69230769230769,
+      "hit@10": 72.3076923076923,
+      "mrr": 50.51147837620149,
+      "recall": 62.727107877107876,
+      "num_queries": 520,
+      "corpus_size": 791,
+      "timestamp": "2026-07-10T14:55:00.664590"
+    },
+    {
+      "model": "BAAI/bge-small-en-v1.5",
+      "hit@1": 52.88461538461539,
+      "hit@5": 79.8076923076923,
+      "hit@10": 84.8076923076923,
+      "mrr": 64.17097550024445,
+      "recall": 76.91572905322906,
+      "num_queries": 520,
+      "corpus_size": 791,
+      "timestamp": "2026-07-10T14:57:35.973728"
+    }
+  ]
+}

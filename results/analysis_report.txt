@@ -1,0 +1,43 @@
+# LLM 評估指標彙總分析報告
+
+本報告僅根據 results/ 目錄下實際存在的真實評估結果 CSV 檔案產生，
+未使用任何合成、模擬或假造的數據。
+
+## QA 任務分析
+
+結果表格：
+                                                Model  Exact Match (%)  F1 Score (%)  Num Samples
+                          deepset/roberta-base-squad2             94.0         95.23          100
+bert-large-uncased-whole-word-masking-finetuned-squad             86.0         91.67          100
+
+Exact Match 最高的模型為「deepset/roberta-base-squad2」（94.00%）。
+F1 Score 最高的模型為「deepset/roberta-base-squad2」（95.23%）。
+
+指標說明：Exact Match（完全匹配）是嚴格度量，只有當模型輸出與標準答案逐字完全相同時才計分，任何字詞差異都會判定為錯誤；F1 Score 則是詞元（token）級別的部分匹配分數，會計算預測答案與標準答案在詞元重疊上的精確率與召回率的調和平均，屬於較寬鬆的評分方式，能反映答案「部分正確」的情況。
+
+## 文本摘要任務分析
+
+結果表格：
+                       Model  ROUGE-1 (%)  ROUGE-2 (%)  ROUGE-L (%)  BERTScore (%)  Num Samples
+     facebook/bart-large-cnn        40.30        19.68        29.95          88.45           50
+google/pegasus-cnn_dailymail        38.17        16.71        27.78          87.59           50
+
+ROUGE-1 最高的模型為「facebook/bart-large-cnn」（40.30%）。
+
+指標說明：ROUGE 系列（ROUGE-1、ROUGE-2、ROUGE-L）是以 n-gram 重疊為基礎的指標，分別衡量生成摘要與參考摘要在單一詞（unigram）、雙詞（bigram）以及最長共同子序列（Longest Common Subsequence）上的重疊程度，屬於表面詞彙層級的比對，無法判斷語意是否相近但用詞不同的情況；BERTScore 則是利用預訓練語言模型的詞向量計算生成摘要與參考摘要之間的語義相似度，即使用詞不完全相同，只要語意相近也能獲得較高分數，因此能補足 ROUGE 系列在語義層面的不足。
+
+## RAG 任務分析
+
+結果表格：
+                                 Model  Hit@1 (%)  Hit@5 (%)  Hit@10 (%)  MRR (%)  File-level Recall@10 (%)  Num Queries
+sentence-transformers/all-MiniLM-L6-v2      39.42      62.69       72.31    50.51                     62.73          520
+                BAAI/bge-small-en-v1.5      52.88      79.81       84.81    64.17                     76.92          520
+
+Hit@10 最高的模型為「BAAI/bge-small-en-v1.5」（84.81%）。
+
+指標說明：Hit@K 是指在檢索結果的前 K 名之中，是否至少命中一個正確答案所在的段落或文件，數值愈高代表檢索系統愈容易在前 K 名內找到相關內容；MRR（Mean Reciprocal Rank，平均倒數排名）則是針對每個查詢，計算第一個命中結果所在排名的倒數（例如第一名命中則為 1，第二名命中則為 0.5），再取所有查詢的平均值，能反映正確結果平均排得多前面；File-level Recall 則是在檔案層級上，衡量前 K 名檢索結果總共涵蓋了多少比例應該被找到的正確證據檔案，著重於檔案（而非段落）是否被完整涵蓋。
+
+## 交叉任務簡短總結
+
+本次分析涵蓋了 QA、文本摘要、RAG 共 3 項任務的真實評估結果。整體而言，三項任務分別採用了不同性質的評估指標：QA 任務著重於答案的精確度與部分匹配程度，文本摘要任務同時考量詞彙重疊與語義相似度，RAG 任務則聚焦於檢索排名品質與證據涵蓋率。
+由於不同任務使用的模型、資料集與指標並不相同，無法直接跨任務比較分數高低，但可以觀察到：在各自任務中，通常是針對該任務或相近領域微調過的模型（例如 QA 任務中專門在 SQuAD 上微調的模型），表現會優於未經微調的通用模型。

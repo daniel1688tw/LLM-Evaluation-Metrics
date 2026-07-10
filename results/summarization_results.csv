@@ -1,0 +1,3 @@
+Model,ROUGE-1 (%),ROUGE-2 (%),ROUGE-L (%),BERTScore (%),Num Samples
+facebook/bart-large-cnn,40.30,19.68,29.95,88.45,50
+google/pegasus-cnn_dailymail,38.17,16.71,27.78,87.59,50
