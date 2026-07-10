@@ -1,0 +1,33 @@
+{
+  "qa": {
+    "dataset": {
+      "name": "squad",
+      "split": "validation"
+    },
+    "models": [
+      "deepset/roberta-base-squad2",
+      "bert-large-uncased-whole-word-masking-finetuned-squad"
+    ]
+  },
+  "summarization": {
+    "dataset": {
+      "name": "cnn_dailymail",
+      "config": "3.0.0",
+      "split": "validation"
+    },
+    "models": [
+      "facebook/bart-large-cnn",
+      "google/pegasus-cnn_dailymail"
+    ]
+  },
+  "rag": {
+    "dataset": {
+      "name": "hippocamp",
+      "url": "https://hippocamp-ai.github.io/"
+    },
+    "models": [
+      "facebook/bart-large-cnn",
+      "google/pegasus-cnn_dailymail"
+    ]
+  }
+}

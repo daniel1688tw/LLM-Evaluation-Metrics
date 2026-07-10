@@ -1,0 +1,50 @@
+# Python 緩存與編譯文件
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# 虛擬環境
+.venv/
+venv/
+ENV/
+env/
+
+# IDE 和編輯器
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 專案輸出與結果
+results/
+outputs/
+*.log
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# 本地緩存
+cache/
+
+# Python 套件
+*.egg-info/
+dist/
+build/
+*.egg
+
+# 測試覆蓋率
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 壓縮檔
+*.zip
+*.tar.gz
+
+# 其他臨時文件
+*.tmp
+.env
