@@ -1,0 +1,10 @@
+.git
+.superpowers
+results
+.hf_cache
+__pycache__
+*.pyc
+docs
+*.md
+2026*.md
+COMMANDS.md

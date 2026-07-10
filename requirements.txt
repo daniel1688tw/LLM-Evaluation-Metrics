@@ -1,12 +1,21 @@
 # LLM 評估指標專案依賴清單
-
-# 深度學習框架
-torch==2.0.1
+#
+# 注意：torch 由 GPU 基礎映像 pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime 提供
+#       （torch 2.1.0 + CUDA 11.8，支援 Ada 架構 GPU），因此此處不列 torch，避免覆蓋成 CPU 版。
 
 # 自然語言處理
 transformers==4.30.2
 datasets==2.13.0
 evaluate==0.4.0
+sentencepiece==0.1.99
+# protobuf：Pegasus 的 tokenizer 轉換需要（PegasusConverter 依賴 protobuf）
+protobuf==3.20.3
+# pyarrow 釘在 12.x：datasets 2.13.0 依賴 pa.PyExtensionType，pyarrow>=14 已移除該屬性
+pyarrow==12.0.1
+
+# 評估指標
+rouge_score==0.1.2
+bert_score==0.3.13
 
 # 機器學習與數據處理
 scikit-learn==1.3.0

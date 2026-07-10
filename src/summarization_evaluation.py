@@ -63,18 +63,14 @@ def load_summarization_dataset(
         return dataset
 
     print(f"正在載入 {dataset_name} v{config} 數據集的 {split} 分割...")
-    try:
-        dataset = load_dataset(dataset_name, name=config, split=split)
-    except Exception as e:
-        print(f"警告：無法從 Hugging Face 加載數據集：{e}")
-        print("嘗試以模擬數據繼續測試...")
-        return load_summarization_dataset(
-            dataset_name=dataset_name,
-            config=config,
-            split=split,
-            sample_size=sample_size,
-            use_mock=True
-        )
+    # verification_mode="no_checks"：cnn_dailymail 在 HF Hub 已改為 parquet 版，
+    # 其 split 筆數與 datasets 2.13.0 內建的預期 metadata 不符，會觸發
+    # NonMatchingSplitsSizesError。此處略過驗證以載入真實資料集。
+    # 注意：不再於失敗時自動退回模擬數據——若載入失敗應大聲報錯，
+    # 避免用假資料產生無效的評估結果。
+    dataset = load_dataset(
+        dataset_name, name=config, split=split, verification_mode="no_checks"
+    )
 
     # 如果指定了樣本大小，則進行截取
     if sample_size is not None:
@@ -166,26 +162,15 @@ def evaluate_summarization_model(
         print(f"正在加載模型 {model_name}...")
         device = 0 if torch.cuda.is_available() else -1
 
-        try:
-            # 使用直接的模型加載方式而不是 pipeline
-            tokenizer = AutoTokenizer.from_pretrained(model_name)
-            model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+        # 加載真實模型（若失敗則大聲報錯，不退回模擬推理）
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-            if device >= 0:
-                model = model.to(device)
-                print(f"模型已加載到 GPU（設備 {device}）")
-            else:
-                print("模型已加載到 CPU")
-        except Exception as e:
-            print(f"警告：無法加載模型 {model_name}: {str(e)}")
-            print("使用模擬推理繼續測試...")
-            return evaluate_summarization_model(
-                model_name=model_name,
-                articles=articles,
-                references=references,
-                num_samples=None,
-                use_mock=True
-            )
+        if device >= 0:
+            model = model.to(device)
+            print(f"模型已加載到 GPU（設備 {device}）")
+        else:
+            print("模型已加載到 CPU")
 
         for article in tqdm(articles, desc="推理進行中"):
             try:
@@ -347,6 +332,5 @@ def main(use_mock_data: bool = False, use_mock_models: bool = False):
 
 
 if __name__ == "__main__":
-    # 在此環境中使用模擬數據和模型進行測試
-    # 實際生產環境中應改為：main(use_mock_data=False, use_mock_models=False)
-    main(use_mock_data=True, use_mock_models=True)
+    # 使用真實 CNN/DailyMail 數據集與真實模型進行評估
+    main(use_mock_data=False, use_mock_models=False)
