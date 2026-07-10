@@ -48,7 +48,8 @@ def exact_match_score(prediction: str, ground_truth: Union[str, List[str]]) -> f
     計算精確匹配分數。
 
     比較預測和參考答案是否完全相同（在正規化後）。
-    如果 ground_truth 是列表，檢查預測是否與列表中的任何一個相匹配。
+    如果 ground_truth 是列表，檢查預測是否與列表中的任何一個相匹配
+    （遵循 SQuAD 評估標準）。
 
     參數：
         prediction: 預測答案
@@ -66,7 +67,7 @@ def exact_match_score(prediction: str, ground_truth: Union[str, List[str]]) -> f
     else:
         ground_truth_list = [ground_truth]
 
-    # 檢查預測是否與任何參考答案完全相同
+    # 檢查預測是否與任何參考答案完全相同（SQuAD 標準）
     for gt in ground_truth_list:
         gt_normalized = normalize_answer(gt)
         if prediction_normalized == gt_normalized:
@@ -80,7 +81,7 @@ def f1_score(prediction: str, ground_truth: Union[str, List[str]]) -> float:
     計算令牌級別的 F1 分數。
 
     使用共同令牌計算精確度和召回率，然後計算 F1 分數。
-    如果 ground_truth 是列表，計算與列表中所有答案的平均 F1 分數。
+    如果 ground_truth 是列表，取最高的 F1 分數（SQuAD 評估標準）。
 
     參數：
         prediction: 預測答案
@@ -93,7 +94,7 @@ def f1_score(prediction: str, ground_truth: Union[str, List[str]]) -> float:
     prediction_normalized = normalize_answer(prediction)
     prediction_tokens = set(prediction_normalized.split())
 
-    # 如果 ground_truth 是列表，計算與列表中所有答案的平均 F1 分數
+    # 如果 ground_truth 是列表，取最高的 F1 分數
     if isinstance(ground_truth, list):
         ground_truth_list = ground_truth
     else:
@@ -120,9 +121,9 @@ def f1_score(prediction: str, ground_truth: Union[str, List[str]]) -> float:
         f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
         f1_scores.append(f1)
 
-    # 返回平均 F1 分數
+    # 返回最高 F1 分數（遵循 SQuAD 評估標準）
     if f1_scores:
-        return sum(f1_scores) / len(f1_scores)
+        return max(f1_scores)
     return 0.0
 
 
@@ -134,6 +135,7 @@ def calculate_qa_metrics(
     計算 QA 指標的總體統計。
 
     計算整個預測集上的平均精確匹配率和 F1 分數。
+    遵循 SQuAD 評估標準（對多個參考答案取最高分）。
 
     參數：
         predictions: 預測答案列表
