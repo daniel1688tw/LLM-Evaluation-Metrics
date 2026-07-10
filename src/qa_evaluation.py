@@ -13,7 +13,8 @@ from typing import List, Dict, Tuple, Optional
 import pandas as pd
 from tqdm import tqdm
 from datasets import load_dataset
-from transformers import pipeline
+from transformers import AutoTokenizer, AutoModelForQuestionAnswering, pipeline
+import torch
 
 from metrics_utils import calculate_qa_metrics
 
@@ -115,9 +116,14 @@ def evaluate_qa_model(
     print(f"\n開始評估模型：{model_name}")
     print(f"評估樣本數：{actual_samples}")
 
-    # 加載 QA pipeline
+    # 加載模型和分詞器
+    print(f"正在加載模型 {model_name}...")
     try:
-        qa_pipeline = pipeline("question-answering", model=model_name)
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForQuestionAnswering.from_pretrained(model_name)
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        model = model.to(device)
+        print(f"模型已加載到 {device} 設備")
     except Exception as e:
         print(f"錯誤：無法加載模型 {model_name}: {str(e)}")
         raise
@@ -128,8 +134,32 @@ def evaluate_qa_model(
 
     for question, context in tqdm(zip(questions, contexts), total=len(questions), desc="推理進行中"):
         try:
-            result = qa_pipeline(question=question, context=context)
-            prediction = result.get("answer", "")
+            # 準備輸入
+            inputs = tokenizer(question, context, return_tensors="pt", truncation=True, max_length=512)
+            input_ids = inputs["input_ids"].to(model.device)
+            attention_mask = inputs["attention_mask"].to(model.device)
+
+            # 執行推理
+            with torch.no_grad():
+                outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+
+            # 解析答案
+            start_logits = outputs.start_logits
+            end_logits = outputs.end_logits
+
+            # 找到最可能的開始和結束位置
+            answer_start_idx = torch.argmax(start_logits)
+            answer_end_idx = torch.argmax(end_logits)
+
+            # 確保結束位置在開始位置之後
+            if answer_start_idx <= answer_end_idx:
+                answer_ids = input_ids[0, answer_start_idx:answer_end_idx + 1]
+            else:
+                answer_ids = input_ids[0, answer_start_idx:answer_start_idx + 1]
+
+            # 解碼答案
+            prediction = tokenizer.decode(answer_ids, skip_special_tokens=True)
+
             predictions.append(prediction)
         except Exception as e:
             print(f"錯誤：推理失敗，問題：{question[:50]}... 錯誤：{str(e)}")
