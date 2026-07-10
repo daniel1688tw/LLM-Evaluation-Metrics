@@ -53,3 +53,6 @@ htmlcov/
 # 其他臨時文件
 *.tmp
 .env
+
+# 內含實驗室伺服器連線隱私資訊，不納入版控
+COMMANDS.md
