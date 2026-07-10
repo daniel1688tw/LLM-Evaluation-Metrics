@@ -168,3 +168,86 @@ def calculate_qa_metrics(
         'exact_match': round(avg_exact_match, 2),
         'f1': round(avg_f1, 2)
     }
+
+
+def calculate_summarization_metrics(
+    predictions: List[str],
+    references: List[str]
+) -> Dict[str, float]:
+    """
+    計算文本摘要評估指標。
+
+    使用 ROUGE 和 BERTScore 評估生成的摘要質量。
+    ROUGE 衡量 n-gram 重疊，BERTScore 衡量語義相似度。
+
+    參數：
+        predictions: 生成的摘要列表
+        references: 參考摘要列表
+
+    返回：
+        字典，包含：
+        - 'rouge1': ROUGE-1 F1 分數（百分比）
+        - 'rouge2': ROUGE-2 F1 分數（百分比）
+        - 'rougeL': ROUGE-L F1 分數（百分比）
+        - 'bertscore': BERTScore F1 平均值（百分比）
+    """
+    if len(predictions) != len(references):
+        raise ValueError(f"預測數量 ({len(predictions)}) 必須等於參考摘要數量 ({len(references)})")
+
+    if len(predictions) == 0:
+        return {
+            'rouge1': 0.0,
+            'rouge2': 0.0,
+            'rougeL': 0.0,
+            'bertscore': 0.0
+        }
+
+    try:
+        from rouge_score import rouge_scorer
+    except ImportError:
+        raise ImportError("請安裝 rouge_score 套件：pip install rouge_score")
+
+    try:
+        from bert_score import score as bert_score_fn
+    except ImportError:
+        raise ImportError("請安裝 bert_score 套件：pip install bert_score")
+
+    # 計算 ROUGE 分數
+    scorer = rouge_scorer.RougeScorer(['rouge1', 'rouge2', 'rougeL'], use_stemmer=True)
+
+    rouge1_scores = []
+    rouge2_scores = []
+    rougeL_scores = []
+
+    for pred, ref in zip(predictions, references):
+        scores = scorer.score(ref, pred)
+        rouge1_scores.append(scores['rouge1'].fmeasure)
+        rouge2_scores.append(scores['rouge2'].fmeasure)
+        rougeL_scores.append(scores['rougeL'].fmeasure)
+
+    # 計算平均 ROUGE 分數
+    avg_rouge1 = sum(rouge1_scores) / len(rouge1_scores) if rouge1_scores else 0.0
+    avg_rouge2 = sum(rouge2_scores) / len(rouge2_scores) if rouge2_scores else 0.0
+    avg_rougeL = sum(rougeL_scores) / len(rougeL_scores) if rougeL_scores else 0.0
+
+    # 計算 BERTScore
+    try:
+        precision, recall, f1 = bert_score_fn(
+            predictions,
+            references,
+            lang="en",
+            batch_size=32,
+            device=None  # 自動選擇 GPU 或 CPU
+        )
+        avg_bertscore = f1.mean().item()
+    except Exception as e:
+        # 如果 BERTScore 計算失敗（例如缺少模型），返回 0
+        avg_bertscore = 0.0
+
+    # 返回所有指標（轉換為百分比格式）
+    return {
+        'rouge1': round(avg_rouge1 * 100, 2),
+        'rouge2': round(avg_rouge2 * 100, 2),
+        'rougeL': round(avg_rougeL * 100, 2),
+        'bertscore': round(avg_bertscore * 100, 2)
+    }
