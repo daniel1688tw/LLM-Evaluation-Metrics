@@ -22,12 +22,15 @@
   },
   "rag": {
     "dataset": {
-      "name": "hippocamp",
-      "url": "https://hippocamp-ai.github.io/"
+      "name": "MMMem-org/HippoCamp",
+      "url": "https://hippocamp-ai.github.io/",
+      "users": ["adam", "bei", "victoria"],
+      "split": "fullset",
+      "qa_type": "factual_retention"
     },
     "models": [
-      "facebook/bart-large-cnn",
-      "google/pegasus-cnn_dailymail"
+      "sentence-transformers/all-MiniLM-L6-v2",
+      "BAAI/bge-small-en-v1.5"
     ]
   }
 }
