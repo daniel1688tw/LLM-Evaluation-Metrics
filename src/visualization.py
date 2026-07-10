@@ -24,9 +24,10 @@ DPI = 300
 # 若清單中的路徑都找不到，則印出警告並沿用預設字型（僅影響圖片中中文字的顯示效果，
 # 不影響任何數據內容的正確性）。
 _CJK_FONT_CANDIDATES = [
-    "/usr/share/fonts/host_win/msjh.ttc",  # 掛載 Windows 字型目錄時的路徑（Microsoft JhengHei）
+    "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",  # apt 套件 fonts-noto-cjk 安裝路徑（見 Dockerfile）
     "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
     "/usr/share/fonts/opentype/noto/NotoSansCJKtc-Regular.otf",
+    "/usr/share/fonts/host_win/msjh.ttc",  # 掛載 Windows 字型目錄時的路徑（Microsoft JhengHei）
     "C:/Windows/Fonts/msjh.ttc",
     "C:/Windows/Fonts/msjhbd.ttc",
 ]

@@ -9,6 +9,10 @@ FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
 # 設定工作目錄
 WORKDIR /workspace
 
+# 安裝思源黑體（Noto Sans CJK），供 matplotlib 圖表正確顯示繁體中文標題與軸標籤
+RUN apt-get update && apt-get install -y --no-install-recommends fonts-noto-cjk \
+    && rm -rf /var/lib/apt/lists/*
+
 # 設定環境變數
 ENV PYTHONUNBUFFERED=1
 ENV HF_HUB_OFFLINE=False
