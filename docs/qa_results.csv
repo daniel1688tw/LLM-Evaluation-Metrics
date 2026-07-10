@@ -1,3 +1,0 @@
-Model,Exact Match (%),F1 Score (%),Num Samples
-deepset/roberta-base-squad2,94.00,95.23,100
-bert-large-uncased-whole-word-masking-finetuned-squad,84.00,90.44,100

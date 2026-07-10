@@ -29,6 +29,11 @@ outputs/
 
 # 本地緩存
 cache/
+# Hugging Face 模型/資料集快取（數 GB，切勿提交）
+.hf_cache/
+
+# 代理驅動開發的暫存檔（工作追蹤用，非專案產物）
+.superpowers/
 
 # Python 套件
 *.egg-info/
